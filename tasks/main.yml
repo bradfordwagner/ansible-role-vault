@@ -1,0 +1,58 @@
+---
+# tasks file for azure-blob-cli
+
+- name: resolve platform specific vars
+  include_vars: '{{ item }}'
+  with_first_found:
+    - files:
+        - '{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml'
+        - '{{ ansible_distribution }}.yml'
+        - '{{ ansible_os_family }}.yml'
+      skip: true
+      paths:
+        - '{{ role_path }}/vars'
+- name: check for {{ abc_install_dir }}
+  become: yes
+  stat:
+    path: '{{ abc_install_dir }}'
+  changed_when: False
+  register: abc_binary
+- when: not abc_binary.stat.exists
+  block:
+    - name: download {{ abc_url }}...
+      become: yes
+      become_user: root
+      get_url:
+        url: '{{ abc_url }}'
+        dest: '{{ abc_tmp_tgz }}'
+        checksum: '{{ abc_checksum }}'
+        mode: 0644
+    - name: mkdir {{ abc_install_dir }}
+      become: yes
+      become_user: root
+      file:
+        path: '{{ abc_install_dir }}'
+        state: directory
+        mode: 0755
+    - name: unarchive {{ abc_tmp_tgz }}
+      become: yes
+      become_user: root
+      unarchive:
+        remote_src: yes
+        src: '{{ abc_tmp_tgz }}'
+        dest: '{{ abc_install_dir }}'
+        creates: '{{ abc_installed_exe }}'
+  always:
+    - name: rm {{ abc_tmp_tgz }}
+      become: yes
+      become_user: root
+      file:
+        path: '{{ abc_tmp_tgz }}'
+        state: absent
+- name: link {{ abc_installed_link }} to {{ abc_installed_exe }}
+  become: yes
+  become_user: root
+  file:
+    src: '{{ abc_installed_exe }}'
+    dest: '{{ abc_installed_link }}'
+    state: link

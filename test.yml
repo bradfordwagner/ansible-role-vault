@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  roles:
+    - role: '{{ playbook_dir }}'
+      abc_ver: 1.0.1
+  tasks:
+    - command: /usr/local/bin/abc
+      register: abc_test_output
+    - name: assert binary prints help output
+      debug:
+        msg: '{{ abc_test_output.stdout }}'

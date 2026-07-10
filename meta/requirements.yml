@@ -1,0 +1,3 @@
+---
+- role: andrewrothstein.unarchivedeps
+  version: 3.0.1
