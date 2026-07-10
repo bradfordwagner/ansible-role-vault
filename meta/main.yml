@@ -1,11 +1,11 @@
 galaxy_info:
-  role_name: gh_template
+  role_name: vault
   author: Bradford Wagner
-  description: gh template for a galaxy role it isn't useful
+  description: installs HashiCorp Vault (community or enterprise)
   company: Blackrock Financial Management
   license: Apache-2.0
   min_ansible_version: 2.1
-  galaxy_tags: [smoketest]
+  galaxy_tags: [vault, hashicorp]
 
 dependencies:
   - andrewrothstein.unarchivedeps

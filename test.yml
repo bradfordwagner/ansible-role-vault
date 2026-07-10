@@ -1,11 +1,64 @@
 ---
-- hosts: localhost
+# exercises all 4 combinations of vault_type x vault_scope.
+# each scenario is its own play so verification runs immediately after its
+# role invocation, before a later scenario sharing the same link_dir
+# overwrites the vault symlink.
+#
+# vault_version is pinned explicitly to match defaults/main.yml's current
+# default (2.0.3) - bump both together, see CLAUDE.md Upgrades.
+
+- name: vault community / system scope (role defaults, no overrides)
+  hosts: localhost
   roles:
     - role: '{{ playbook_dir }}'
-      abc_ver: 1.0.1
   tasks:
-    - command: /usr/local/bin/abc
-      register: abc_test_output
-    - name: assert binary prints help output
-      debug:
-        msg: '{{ abc_test_output.stdout }}'
+    - include_tasks: tests/verify.yml
+      vars:
+        verify_type: community
+        verify_scope: system
+        verify_version: '2.0.3'
+
+- name: vault community / local scope
+  hosts: localhost
+  roles:
+    - role: '{{ playbook_dir }}'
+      vars:
+        vault_version: '2.0.3'
+        vault_type: community
+        vault_scope: local
+  tasks:
+    - include_tasks: tests/verify.yml
+      vars:
+        verify_type: community
+        verify_scope: local
+        verify_version: '2.0.3'
+
+- name: vault enterprise / system scope
+  hosts: localhost
+  roles:
+    - role: '{{ playbook_dir }}'
+      vars:
+        vault_version: '2.0.3'
+        vault_type: enterprise
+        vault_scope: system
+  tasks:
+    - include_tasks: tests/verify.yml
+      vars:
+        verify_type: enterprise
+        verify_scope: system
+        verify_version: '2.0.3'
+
+- name: vault enterprise / local scope
+  hosts: localhost
+  roles:
+    - role: '{{ playbook_dir }}'
+      vars:
+        vault_version: '2.0.3'
+        vault_type: enterprise
+        vault_scope: local
+  tasks:
+    - include_tasks: tests/verify.yml
+      vars:
+        verify_type: enterprise
+        verify_scope: local
+        verify_version: '2.0.3'
