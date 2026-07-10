@@ -26,7 +26,7 @@
     - name: download={{ vault_download_url }}, dest={{ vault_tmp_zip }}
       become: '{{ vault_become }}'
       become_user: root
-      become_method: '{{ vault_become_method }}'
+      become_method: sudo
       get_url:
         url: '{{ vault_download_url }}'
         dest: '{{ vault_tmp_zip }}'
@@ -36,7 +36,7 @@
     - name: mkdir={{ vault_install_dir }}
       become: '{{ vault_become }}'
       become_user: root
-      become_method: '{{ vault_become_method }}'
+      become_method: sudo
       file:
         path: '{{ vault_install_dir }}'
         state: directory
@@ -45,7 +45,7 @@
     - name: unarchive={{ vault_tmp_zip }}, dest={{ vault_install_dir }}
       become: '{{ vault_become }}'
       become_user: root
-      become_method: '{{ vault_become_method }}'
+      become_method: sudo
       unarchive:
         remote_src: true
         src: '{{ vault_tmp_zip }}'
@@ -56,7 +56,7 @@
     - name: rm {{ vault_tmp_zip }}
       become: '{{ vault_become }}'
       become_user: root
-      become_method: '{{ vault_become_method }}'
+      become_method: sudo
       file:
         path: '{{ vault_tmp_zip }}'
         state: absent
@@ -64,7 +64,7 @@
 - name: mkdir={{ vault_link_dir }}
   become: '{{ vault_become }}'
   become_user: root
-  become_method: '{{ vault_become_method }}'
+  become_method: sudo
   file:
     path: '{{ vault_link_dir }}'
     state: directory
@@ -73,7 +73,7 @@
 - name: link {{ vault_installed_link }} to {{ vault_installed_exe }}
   become: '{{ vault_become }}'
   become_user: root
-  become_method: '{{ vault_become_method }}'
+  become_method: sudo
   file:
     src: '{{ vault_installed_exe }}'
     dest: '{{ vault_installed_link }}'

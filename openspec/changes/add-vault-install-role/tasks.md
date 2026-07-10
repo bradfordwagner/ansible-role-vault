@@ -31,3 +31,11 @@
 
 - [x] 5.1 No `.yamllint`/`.ansible-lint` config exists anywhere in this repo or in the sibling `go.releaser.install`/`azure-blob-cli` reference roles (which themselves fail default yamllint's 80-char/truthy-value rules) — nothing configured to run, consistent with established practice, not a new gap.
 - [x] 5.2 Confirmed: `defaults/main.yml` and `README.md`'s variable table both list exactly the same 10 variables (`vault_arch_map`, `vault_become`, `vault_become_method`, `vault_checksum_algo`, `vault_link_dir`, `vault_mirror`, `vault_parent_install_dir`, `vault_scope`, `vault_type`, `vault_version`).
+
+## 6. Reduce exposed variable surface
+
+- [x] 6.1 `defaults/main.yml`: keep only `vault_version`, `vault_type`, `vault_scope`, `vault_mirror`. Removed `vault_parent_install_dir`, `vault_link_dir`, `vault_become`, `vault_become_method`, `vault_arch_map`, `vault_checksum_algo` as exposed/overridable variables.
+- [x] 6.2 `vars/main.yml`: moved the scope-derived computation (parent install dir, link dir, `become`) here as internal values (no longer individually overridable), and added `vault_arch_map` (constant) and `vault_checksum_algo: sha256` (constant) here instead of `defaults/main.yml`.
+- [x] 6.3 `tasks/main.yml`: hardcoded `become_method: sudo` on every task instead of referencing `vault_become_method`.
+- [x] 6.4 `README.md`: trimmed the variable table to the 4 remaining variables; usage examples didn't reference any removed variable, so no changes needed there.
+- [x] 6.5 Re-ran `test.yml` locally: `ok=106, changed=20, failed=0` — all 4 scenarios (community/enterprise x system/local) still pass identically. Pushed and confirmed CI green.

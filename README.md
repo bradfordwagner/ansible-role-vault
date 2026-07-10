@@ -10,14 +10,8 @@ This role is a binary installer only — it does not manage a systemd unit, writ
 |---|---|---|
 | `vault_version` | `2.0.3` | Bare Vault version to install, without any `+ent` suffix. Check `https://releases.hashicorp.com/vault/index.json` for newer releases. |
 | `vault_type` | `community` | `community` or `enterprise`. When `enterprise`, `+ent` is appended to `vault_version` in every download URL and install path. |
-| `vault_scope` | `system` | `system` or `local`. Drives `vault_parent_install_dir`, `vault_link_dir`, and `vault_become` together (each remains individually overridable). |
-| `vault_parent_install_dir` | `/usr/local` (system) or `{{ ansible_env.HOME }}/.local` (local) | Base directory under which `vault/<version>/vault` is installed. |
-| `vault_link_dir` | `/usr/local/bin` (system) or `{{ ansible_env.HOME }}/.local/bin` (local) | Directory where the `vault` symlink is created. |
-| `vault_become` | `true` (system) or `false` (local) | Whether install/download/link tasks escalate privilege via `become`. |
-| `vault_become_method` | `sudo` | `become_method` used when `vault_become` is `true`. |
+| `vault_scope` | `system` | `system` or `local`. Drives the install directory, link directory, and `become` together — `system` installs under `/usr/local` with `become: true`; `local` installs under `{{ ansible_env.HOME }}/.local` with no privilege escalation. Not independently overridable; if you need a different combination, `vault_scope` is the supported way to get it. |
 | `vault_mirror` | `https://releases.hashicorp.com/vault` | Base URL to download releases and checksums from. |
-| `vault_arch_map` | `{x86_64: amd64, aarch64: arm64, arm64: arm64}` | Maps `ansible_architecture` to the architecture name HashiCorp uses in its release filenames. |
-| `vault_checksum_algo` | `sha256` | Checksum algorithm passed to `get_url`'s `checksum:` parameter. |
 
 ## Usage
 

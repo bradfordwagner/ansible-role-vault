@@ -67,7 +67,7 @@ The role SHALL create (or update) a symlink named `vault` in `vault_link_dir` po
 - **THEN** the existing symlink at `vault_link_dir` is replaced to point at the newly installed version
 
 ### Requirement: System vs. local install scope
-The role SHALL expose a single `vault_scope` variable (`system` or `local`) that together determines the parent install directory, the link directory, and whether install/link tasks escalate privilege via `become`. `system` SHALL install under `/usr/local` with `become: true`; `local` SHALL install under `{{ ansible_env.HOME }}/.local` with `become: false`. Each of the derived variables (`vault_parent_install_dir`, `vault_link_dir`, `vault_become`) SHALL remain individually overridable.
+The role SHALL expose a single `vault_scope` variable (`system` or `local`) that determines the parent install directory, the link directory, and whether install/link tasks escalate privilege via `become`. `system` SHALL install under `/usr/local` with `become: true`; `local` SHALL install under `{{ ansible_env.HOME }}/.local` with `become: false`. The derived values (parent install directory, link directory, `become`) are internal and SHALL NOT be independently overridable variables — `vault_scope` is the only supported way to change this behavior.
 
 #### Scenario: System scope requires no manual become configuration
 - **WHEN** `vault_scope: system` (the default)
@@ -77,9 +77,12 @@ The role SHALL expose a single `vault_scope` variable (`system` or `local`) that
 - **WHEN** `vault_scope: local`
 - **THEN** the role installs to `{{ ansible_env.HOME }}/.local/vault/...`, links at `{{ ansible_env.HOME }}/.local/bin/vault`, and no install/link task uses `become`
 
-#### Scenario: Individual override wins over scope default
-- **WHEN** `vault_scope: system` and `vault_link_dir: /opt/vault/bin` is also set
-- **THEN** the symlink is created at `/opt/vault/bin/vault`, while the install directory and `become` still follow the `system` scope default
+### Requirement: Minimal exposed variable surface
+The role SHALL expose only variables that cannot be reasonably derived or assumed: `vault_version`, `vault_type`, `vault_scope`, and `vault_mirror`. Any value that is fully determined by one of these (install/link directories and `become`, derived from `vault_scope`) or that is an internal implementation constant with no legitimate per-install override case (the become method, the architecture-name map, the checksum algorithm) SHALL be an internal `vars/main.yml`/`tasks/main.yml` value, not a `defaults/main.yml` variable.
+
+#### Scenario: Only four variables are documented as configurable
+- **WHEN** a user reads `README.md`'s variable table
+- **THEN** it lists exactly `vault_version`, `vault_type`, `vault_scope`, and `vault_mirror` — no other variable is presented as a supported override
 
 ### Requirement: Documented variables
 `README.md` SHALL document every variable defined in `defaults/main.yml`, including its default value and a description of what it controls.

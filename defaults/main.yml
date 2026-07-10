@@ -9,20 +9,9 @@ vault_version: '2.0.3'
 # (download URL, checksum URL, install path)
 vault_type: community
 
-# system|local - drives vault_parent_install_dir, vault_link_dir, and vault_become
-# together. Each of those three vars can still be overridden individually.
+# system|local - drives the install dir, link dir, and become together
+# (see vars/main.yml). system installs under /usr/local with become; local
+# installs under {{ ansible_env.HOME }}/.local with no become.
 vault_scope: system
 
-vault_parent_install_dir: "{{ '/usr/local' if vault_scope == 'system' else ansible_env.HOME + '/.local' }}"
-vault_link_dir: "{{ '/usr/local/bin' if vault_scope == 'system' else ansible_env.HOME + '/.local/bin' }}"
-vault_become: "{{ vault_scope == 'system' }}"
-vault_become_method: sudo
-
 vault_mirror: https://releases.hashicorp.com/vault
-
-vault_arch_map:
-  x86_64: amd64
-  aarch64: arm64
-  arm64: arm64
-
-vault_checksum_algo: sha256
