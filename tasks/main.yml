@@ -1,58 +1,81 @@
 ---
-# tasks file for azure-blob-cli
+# tasks file for vault
+- include_role:
+    name: andrewrothstein.unarchivedeps
 
-- name: resolve platform specific vars
-  include_vars: '{{ item }}'
-  with_first_found:
-    - files:
-        - '{{ ansible_distribution }}-{{ ansible_distribution_release }}.yml'
-        - '{{ ansible_distribution }}.yml'
-        - '{{ ansible_os_family }}.yml'
-      skip: true
-      paths:
-        - '{{ role_path }}/vars'
-- name: check for {{ abc_install_dir }}
-  become: yes
+- name: check for {{ vault_installed_exe }}
   stat:
-    path: '{{ abc_install_dir }}'
-  changed_when: False
-  register: abc_binary
-- when: not abc_binary.stat.exists
+    path: '{{ vault_installed_exe }}'
+  changed_when: false
+  register: vault_binary
+
+- when: not vault_binary.stat.exists
   block:
-    - name: download {{ abc_url }}...
-      become: yes
+    - name: get checksums={{ vault_checksum_url }}
+      uri:
+        url: '{{ vault_checksum_url }}'
+        return_content: yes
+      register: vault_checksum_response
+
+    - name: resolve checksum for {{ vault_archive }}
+      set_fact:
+        vault_checksum: "{{ vault_checksum_algo }}:{{ item.split()[0] }}"
+      loop: "{{ vault_checksum_response.content.split('\n') }}"
+      when: vault_archive in item
+
+    - name: download={{ vault_download_url }}, dest={{ vault_tmp_zip }}
+      become: '{{ vault_become }}'
       become_user: root
+      become_method: sudo
       get_url:
-        url: '{{ abc_url }}'
-        dest: '{{ abc_tmp_tgz }}'
-        checksum: '{{ abc_checksum }}'
-        mode: 0644
-    - name: mkdir {{ abc_install_dir }}
-      become: yes
+        url: '{{ vault_download_url }}'
+        dest: '{{ vault_tmp_zip }}'
+        checksum: '{{ vault_checksum }}'
+        mode: '0644'
+
+    - name: mkdir={{ vault_install_dir }}
+      become: '{{ vault_become }}'
       become_user: root
+      become_method: sudo
       file:
-        path: '{{ abc_install_dir }}'
+        path: '{{ vault_install_dir }}'
         state: directory
-        mode: 0755
-    - name: unarchive {{ abc_tmp_tgz }}
-      become: yes
+        mode: '0755'
+
+    - name: unarchive={{ vault_tmp_zip }}, dest={{ vault_install_dir }}
+      become: '{{ vault_become }}'
       become_user: root
+      become_method: sudo
       unarchive:
-        remote_src: yes
-        src: '{{ abc_tmp_tgz }}'
-        dest: '{{ abc_install_dir }}'
-        creates: '{{ abc_installed_exe }}'
+        remote_src: true
+        src: '{{ vault_tmp_zip }}'
+        dest: '{{ vault_install_dir }}'
+        creates: '{{ vault_installed_exe }}'
+        mode: '0755'
   always:
-    - name: rm {{ abc_tmp_tgz }}
-      become: yes
+    - name: rm {{ vault_tmp_zip }}
+      become: '{{ vault_become }}'
       become_user: root
+      become_method: sudo
       file:
-        path: '{{ abc_tmp_tgz }}'
+        path: '{{ vault_tmp_zip }}'
         state: absent
-- name: link {{ abc_installed_link }} to {{ abc_installed_exe }}
-  become: yes
+
+- name: mkdir={{ vault_link_dir }}
+  become: '{{ vault_become }}'
   become_user: root
+  become_method: sudo
   file:
-    src: '{{ abc_installed_exe }}'
-    dest: '{{ abc_installed_link }}'
+    path: '{{ vault_link_dir }}'
+    state: directory
+    mode: '0755'
+
+- name: link {{ vault_installed_link }} to {{ vault_installed_exe }}
+  become: '{{ vault_become }}'
+  become_user: root
+  become_method: sudo
+  file:
+    src: '{{ vault_installed_exe }}'
+    dest: '{{ vault_installed_link }}'
     state: link
+    force: true

@@ -1,0 +1,81 @@
+---
+# included by test.yml with verify_type, verify_scope, verify_version already set
+# re-derives the same paths as vars/main.yml/defaults/main.yml to check the
+# just-completed role invocation without depending on role-internal var scope
+
+- set_fact:
+    verify_full_version: '{{ verify_version }}{{ "+ent" if verify_type == "enterprise" else "" }}'
+    verify_parent_install_dir: "{{ '/usr/local' if verify_scope == 'system' else ansible_env.HOME + '/.local' }}"
+    verify_link_dir: "{{ '/usr/local/bin' if verify_scope == 'system' else ansible_env.HOME + '/.local/bin' }}"
+
+- set_fact:
+    verify_install_dir: '{{ verify_parent_install_dir }}/vault/{{ verify_full_version }}'
+    verify_link: '{{ verify_link_dir }}/vault'
+
+- set_fact:
+    verify_exe: '{{ verify_install_dir }}/vault'
+
+- name: '{{ verify_exe }} --version'
+  command: '{{ verify_exe }} --version'
+  changed_when: false
+  register: verify_version_output
+
+- name: assert version output contains {{ verify_full_version }}
+  assert:
+    that:
+      - verify_full_version in verify_version_output.stdout
+
+- name: stat symlink {{ verify_link }}
+  stat:
+    path: '{{ verify_link }}'
+  register: verify_link_stat
+
+- name: assert symlink resolves to {{ verify_exe }}
+  assert:
+    that:
+      - verify_link_stat.stat.exists
+      - verify_link_stat.stat.islnk
+      - verify_link_stat.stat.lnk_source == verify_exe
+
+- name: stat community license file
+  when: verify_type == 'community'
+  stat:
+    path: '{{ verify_install_dir }}/LICENSE.txt'
+  register: verify_community_license
+
+- name: assert community license file present
+  when: verify_type == 'community'
+  assert:
+    that:
+      - verify_community_license.stat.exists
+
+- name: find enterprise license agreement files
+  when: verify_type == 'enterprise'
+  find:
+    paths: '{{ verify_install_dir }}'
+    patterns: 'LA_*'
+  register: verify_enterprise_license
+
+- name: assert enterprise license agreement files present
+  when: verify_type == 'enterprise'
+  assert:
+    that:
+      - verify_enterprise_license.matched > 0
+
+- name: stat enterprise notices file
+  when: verify_type == 'enterprise'
+  stat:
+    path: '{{ verify_install_dir }}/notices'
+  register: verify_notices
+
+- name: assert enterprise notices file present
+  when: verify_type == 'enterprise'
+  assert:
+    that:
+      - verify_notices.stat.exists
+
+- name: assert no privilege escalation was needed for local scope
+  when: verify_scope == 'local'
+  assert:
+    that:
+      - verify_link_stat.stat.pw_name == ansible_user_id
