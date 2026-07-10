@@ -20,7 +20,7 @@ This role is a binary installer only — it does not manage a systemd unit, writ
 ```yaml
 - hosts: all
   roles:
-    - role: vault
+    - role: bradfordwagner.vault
 ```
 
 Installs the pinned default Community version to `/usr/local/vault/<version>/vault`, symlinked at `/usr/local/bin/vault`, using `become`.
@@ -30,7 +30,7 @@ Installs the pinned default Community version to `/usr/local/vault/<version>/vau
 ```yaml
 - hosts: all
   roles:
-    - role: vault
+    - role: bradfordwagner.vault
       vault_version: '2.0.3'
       vault_type: enterprise
 ```
@@ -42,7 +42,7 @@ Installs to `/usr/local/vault/2.0.3+ent/vault`, symlinked at `/usr/local/bin/vau
 ```yaml
 - hosts: all
   roles:
-    - role: vault
+    - role: bradfordwagner.vault
       vault_scope: local
 ```
 
