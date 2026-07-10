@@ -78,4 +78,4 @@
   when: verify_scope == 'local'
   assert:
     that:
-      - verify_link_stat.stat.pw_name == ansible_env.USER
+      - verify_link_stat.stat.pw_name == ansible_user_id
