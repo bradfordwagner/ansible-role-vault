@@ -61,6 +61,15 @@
         path: '{{ vault_tmp_zip }}'
         state: absent
 
+- name: mkdir={{ vault_link_dir }}
+  become: '{{ vault_become }}'
+  become_user: root
+  become_method: '{{ vault_become_method }}'
+  file:
+    path: '{{ vault_link_dir }}'
+    state: directory
+    mode: '0755'
+
 - name: link {{ vault_installed_link }} to {{ vault_installed_exe }}
   become: '{{ vault_become }}'
   become_user: root
