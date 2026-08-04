@@ -5,7 +5,7 @@
 # overwrites the vault symlink.
 #
 # vault_version is pinned explicitly to match defaults/main.yml's current
-# default (2.0.3) - bump both together, see CLAUDE.md Upgrades.
+# default (2.0.4) - bump both together, see CLAUDE.md Upgrades.
 
 - name: vault community / system scope (role defaults, no overrides)
   hosts: localhost
@@ -16,14 +16,14 @@
       vars:
         verify_type: community
         verify_scope: system
-        verify_version: '2.0.3'
+        verify_version: '2.0.4'
 
 - name: vault community / local scope
   hosts: localhost
   roles:
     - role: '{{ playbook_dir }}'
       vars:
-        vault_version: '2.0.3'
+        vault_version: '2.0.4'
         vault_type: community
         vault_scope: local
   tasks:
@@ -31,14 +31,14 @@
       vars:
         verify_type: community
         verify_scope: local
-        verify_version: '2.0.3'
+        verify_version: '2.0.4'
 
 - name: vault enterprise / system scope
   hosts: localhost
   roles:
     - role: '{{ playbook_dir }}'
       vars:
-        vault_version: '2.0.3'
+        vault_version: '2.0.4'
         vault_type: enterprise
         vault_scope: system
   tasks:
@@ -46,14 +46,14 @@
       vars:
         verify_type: enterprise
         verify_scope: system
-        verify_version: '2.0.3'
+        verify_version: '2.0.4'
 
 - name: vault enterprise / local scope
   hosts: localhost
   roles:
     - role: '{{ playbook_dir }}'
       vars:
-        vault_version: '2.0.3'
+        vault_version: '2.0.4'
         vault_type: enterprise
         vault_scope: local
   tasks:
@@ -61,4 +61,4 @@
       vars:
         verify_type: enterprise
         verify_scope: local
-        verify_version: '2.0.3'
+        verify_version: '2.0.4'
