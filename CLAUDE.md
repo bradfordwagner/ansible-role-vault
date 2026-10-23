@@ -11,3 +11,7 @@ Two independent things can go stale and should be checked when revisiting this r
 3. **CI base image** (`config.yaml`'s `upstream.tag`, `ghcr.io/bradfordwagner/ansible`): check `ghcr.io/v2/bradfordwagner/ansible/tags/list` (anonymous token from `ghcr.io/token?service=ghcr.io&scope=repository:bradfordwagner/ansible:pull`) for a newer semver tag. The `builds:` OS list must be updated to match whatever OS variants that new tag actually publishes — older OS families get dropped between releases (e.g. `debian_bookworm`, `rockylinux_9`, `ubuntu_jammy`, and `alpine_3.18/19/20` all disappeared by `6.4.0`), so bumping the tag alone without updating `builds:` breaks CI.
 
 Ansible role dependencies and the CI base image are part of "upgrades" for this repo, not just the software the role installs.
+
+## Renovate
+
+Renovate (`bradfordwagner/renovate`, preset `ansible-role`) opens PRs for the version pins marked `# renovate:`, `meta/requirements.yml`, `config.yaml`'s `upstream.tag` and GitHub Actions. A merged PR labeled `release` is tagged with the next patch version and published to Galaxy by `.github/workflows/release.yml`.
