@@ -5,13 +5,13 @@
 
 vault_full_version: "{{ vault_version }}{{ '+ent' if vault_type == 'enterprise' else '' }}"
 
-vault_os: '{{ ansible_system | lower }}'
+vault_os: '{{ ansible_facts.system | lower }}'
 
 vault_arch_map:
   x86_64: amd64
   aarch64: arm64
   arm64: arm64
-vault_arch: '{{ vault_arch_map[ansible_architecture] }}'
+vault_arch: '{{ vault_arch_map[ansible_facts.architecture] }}'
 
 vault_archive: 'vault_{{ vault_full_version }}_{{ vault_os }}_{{ vault_arch }}.zip'
 vault_download_url: '{{ vault_mirror }}/{{ vault_full_version }}/{{ vault_archive }}'
@@ -20,8 +20,8 @@ vault_checksum_algo: sha256
 vault_checksum_file: 'vault_{{ vault_full_version }}_SHA256SUMS'
 vault_checksum_url: '{{ vault_mirror }}/{{ vault_full_version }}/{{ vault_checksum_file }}'
 
-vault_parent_install_dir: "{{ '/usr/local' if vault_scope == 'system' else ansible_env.HOME + '/.local' }}"
-vault_link_dir: "{{ '/usr/local/bin' if vault_scope == 'system' else ansible_env.HOME + '/.local/bin' }}"
+vault_parent_install_dir: "{{ '/usr/local' if vault_scope == 'system' else ansible_facts.env.HOME + '/.local' }}"
+vault_link_dir: "{{ '/usr/local/bin' if vault_scope == 'system' else ansible_facts.env.HOME + '/.local/bin' }}"
 vault_become: '{{ vault_scope == "system" }}'
 
 vault_install_dir: '{{ vault_parent_install_dir }}/vault/{{ vault_full_version }}'
