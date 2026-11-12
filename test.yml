@@ -17,7 +17,7 @@
         verify_type: community
         verify_scope: system
         # renovate: datasource=github-releases depName=hashicorp/vault extractVersion=^v(?<version>.*)$
-        verify_version: '2.2.1'
+        verify_version: '2.2.2'
 
 - name: vault community / local scope
   hosts: localhost
@@ -25,7 +25,7 @@
     - role: '{{ playbook_dir }}'
       vars:
         # renovate: datasource=github-releases depName=hashicorp/vault extractVersion=^v(?<version>.*)$
-        vault_version: '2.2.1'
+        vault_version: '2.2.2'
         vault_type: community
         vault_scope: local
   tasks:
@@ -34,7 +34,7 @@
         verify_type: community
         verify_scope: local
         # renovate: datasource=github-releases depName=hashicorp/vault extractVersion=^v(?<version>.*)$
-        verify_version: '2.2.1'
+        verify_version: '2.2.2'
 
 - name: vault enterprise / system scope
   hosts: localhost
@@ -42,7 +42,7 @@
     - role: '{{ playbook_dir }}'
       vars:
         # renovate: datasource=github-releases depName=hashicorp/vault extractVersion=^v(?<version>.*)$
-        vault_version: '2.2.1'
+        vault_version: '2.2.2'
         vault_type: enterprise
         vault_scope: system
   tasks:
@@ -51,7 +51,7 @@
         verify_type: enterprise
         verify_scope: system
         # renovate: datasource=github-releases depName=hashicorp/vault extractVersion=^v(?<version>.*)$
-        verify_version: '2.2.1'
+        verify_version: '2.2.2'
 
 - name: vault enterprise / local scope
   hosts: localhost
@@ -59,7 +59,7 @@
     - role: '{{ playbook_dir }}'
       vars:
         # renovate: datasource=github-releases depName=hashicorp/vault extractVersion=^v(?<version>.*)$
-        vault_version: '2.2.1'
+        vault_version: '2.2.2'
         vault_type: enterprise
         vault_scope: local
   tasks:
@@ -68,4 +68,4 @@
         verify_type: enterprise
         verify_scope: local
         # renovate: datasource=github-releases depName=hashicorp/vault extractVersion=^v(?<version>.*)$
-        verify_version: '2.2.1'
+        verify_version: '2.2.2'
