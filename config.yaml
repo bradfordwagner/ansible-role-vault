@@ -1,4 +1,4 @@
-target_repo: ghcr.io/bradfordwagner/gh-template-ansible-playbook
+target_repo: ghcr.io/bradfordwagner/ansible-role-vault
 flavor: ansible_role
 builds:
     - os: alpine_3.22
